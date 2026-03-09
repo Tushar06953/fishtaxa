@@ -6,12 +6,12 @@ import '../../../shared/providers/species_db_provider.dart';
 enum GuideFilter { all, majorCarp, catfish, snakehead, spinyEel, medicinal }
 
 final guideFilterProvider =
-    StateProvider<GuideFilter>((_) => GuideFilter.all);
+StateProvider<GuideFilter>((_) => GuideFilter.all);
 
 final guideSearchProvider = StateProvider<String>((_) => '');
 
 final filteredSpeciesProvider =
-    Provider<AsyncValue<List<Species>>>((ref) {
+Provider<AsyncValue<List<Species>>>((ref) {
   return ref.watch(allSpeciesProvider).whenData((all) {
     var list = all;
     final filter = ref.watch(guideFilterProvider);
@@ -46,10 +46,10 @@ final filteredSpeciesProvider =
 
     if (q.isNotEmpty) {
       list = list.where((s) =>
-        s.commonNameEn.toLowerCase().contains(q) ||
-        s.scientificName.toLowerCase().contains(q) ||
-        (s.nameHindi?.toLowerCase().contains(q) ?? false) ||
-        (s.nameCgLocal?.toLowerCase().contains(q) ?? false)
+      s.commonNameEn.toLowerCase().contains(q) ||
+          s.scientificName.toLowerCase().contains(q) ||
+          s.label.toLowerCase().contains(q) ||
+          (s.otherNames?.toLowerCase().contains(q) ?? false)
       ).toList();
     }
     return list;

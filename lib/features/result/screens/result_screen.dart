@@ -167,7 +167,7 @@ class ResultScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            species?.commonNameEn ?? result.speciesLabel,
+                            species?.label ?? result.speciesLabel,
                             style: Theme.of(context)
                                 .textTheme
                                 .displaySmall
@@ -295,20 +295,21 @@ class ResultScreen extends ConsumerWidget {
                               ?.copyWith(color: AppColors.tealBright),
                         ),
                         const SizedBox(height: 12),
-                        _nameRow('🇮🇳 Hindi', species.nameHindi, context),
-                        const SizedBox(height: 10),
-                        _nameRow(
-                            '🇮🇳 CG / Local', species.nameCgLocal, context),
+                        if (species.otherNamesList.isNotEmpty)
+                          _nameRow('🇮🇳 Local Names',
+                              species.otherNamesList.join(' · '), context)
+                        else
+                          _nameRow('🇮🇳 Local Names', null, context),
                       ],
                     ),
                   ).animate().fadeIn(delay: 250.ms, duration: 400.ms),
                   const SizedBox(height: 12),
 
                   // Health advisory as bullets
-                  if (species.healthAdvisory != null)
+                  if (species.healthUses != null)
                     _InfoCard(
                       child: _HealthAdvisoryContent(
-                        advisory: species.healthAdvisory!,
+                        advisory: species.healthUses!,
                         isInvasive: isInvasive,
                       ),
                     ).animate().fadeIn(delay: 300.ms, duration: 400.ms),
@@ -487,7 +488,7 @@ class _HealthAdvisoryContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bullets = advisory
-        .split('. ')
+        .split('|')
         .map((s) => s.trim())
         .where((s) => s.isNotEmpty)
         .toList();

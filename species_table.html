@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FishTaxa — Species Database</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1a;
+    --surface: #111827;
+    --card: #161f30;
+    --border: #1e2d45;
+    --teal: #0fd4b8;
+    --gold: #f5c842;
+    --coral: #ff6b47;
+    --blue: #4a9eff;
+    --muted: #4a607a;
+    --text: #d6e4f0;
+    --text2: #8aa3bc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+  .header {
+    padding: 32px 40px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  .logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--teal); }
+  .subtitle { color: var(--muted); font-size: 13px; margin-left: auto; }
+  .count-badge {
+    background: var(--teal);
+    color: #000;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+  }
+  .search-bar {
+    padding: 16px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .search-bar input {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 16px;
+    border-radius: 8px;
+    width: 320px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+  }
+  .search-bar input:focus { border-color: var(--teal); }
+  .search-bar input::placeholder { color: var(--muted); }
+  .table-wrap { overflow-x: auto; padding: 24px 40px 60px; }
+  table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+  thead tr {
+    background: var(--surface);
+    border-bottom: 2px solid var(--teal);
+  }
+  th {
+    text-align: left;
+    padding: 12px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--teal);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: var(--card); }
+  td { padding: 14px 14px; vertical-align: top; }
+
+  .id-cell {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    width: 36px;
+  }
+  .label-cell {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--teal);
+    white-space: nowrap;
+  }
+  .common-cell { color: var(--text); font-size: 13px; }
+  .sci-cell {
+    font-style: italic;
+    color: var(--text2);
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+  .names-cell { max-width: 200px; }
+  .name-tag {
+    display: inline-block;
+    background: rgba(74, 158, 255, 0.12);
+    border: 1px solid rgba(74, 158, 255, 0.25);
+    color: #7eb8ff;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
+    margin: 2px 2px 2px 0;
+    white-space: nowrap;
+  }
+  .price-cell {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .health-cell { max-width: 260px; }
+  .health-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+  .health-point .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--teal);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .health-point.warn .dot { background: var(--coral); }
+  .health-point.warn { color: #ff9f85; }
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+  }
+  .status-permitted { background: rgba(0,255,136,0.12); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
+  .no-results { text-align: center; color: var(--muted); padding: 60px; font-size: 15px; }
+  .col-toggle { font-size: 12px; color: var(--muted); margin-left: 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .col-toggle label { cursor: pointer; display: flex; align-items: center; gap: 5px; }
+  .col-toggle input[type=checkbox] { accent-color: var(--teal); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="logo">🐟 FishTaxa</span>
+  <span style="color:var(--muted);font-size:13px;">Species Database</span>
+  <span class="count-badge">26 SPECIES</span>
+  <span class="subtitle">Cross-check view — all fields visible</span>
+</div>
+
+<div class="search-bar" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+  <input type="text" id="searchInput" placeholder="Search label, scientific name, local names..." oninput="filterTable()">
+  <div class="col-toggle">
+    Show:
+    <label><input type="checkbox" checked onchange="toggleCol('col-health')"> Health Uses</label>
+    <label><input type="checkbox" checked onchange="toggleCol('col-names')"> Other Names</label>
+    <label><input type="checkbox" checked onchange="toggleCol('col-price')"> Price</label>
+  </div>
+</div>
+
+<div class="table-wrap">
+<table id="mainTable">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Label</th>
+      <th>Common Name (EN)</th>
+      <th>Scientific Name</th>
+      <th class="col-names">Other / Local Names</th>
+      <th>Status</th>
+      <th class="col-price">Price /kg (₹)</th>
+      <th class="col-health">Health & Uses</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+<div class="no-results" id="noResults" style="display:none;">No species match your search.</div>
+</div>
+
+<script>
+const data = [
+  {id:1,label:"Bachba",common:"Garua Bacha",sci:"Clupisoma garua",names:"Bachawa|Buchua|Garua|Bacha Pabda",status:"permitted",pmin:100,pmax:200,health:"Rich in protein|Good source of omega-3 fatty acids|Easily digestible — suitable for elderly and children|Traditionally eaten for strength and stamina"},
+  {id:2,label:"Bami",common:"Spiny Eel",sci:"Mastacembelus armatus",names:"Baam|Baim|Gonch|Gunch|Baunsi",status:"permitted",pmin:120,pmax:250,health:"High in protein|Good source of iron and phosphorus|Firm flesh — beneficial for muscle recovery|Low fat content"},
+  {id:3,label:"Bhakur",common:"Catla / Surface Carp",sci:"Catla catla",names:"Katla|Bhakura|Thekua|Catol|Boal Kata",status:"permitted",pmin:170,pmax:250,health:"High in protein and essential amino acids|Rich in omega-3 — good for heart health|Recommended for growing children|Low in saturated fat"},
+  {id:4,label:"Bhaura",common:"Great Snakehead",sci:"Channa marulius",names:"Saur|Sawl|Saal|Soal|Ahal|Pla chon",status:"permitted",pmin:180,pmax:350,health:"Very high protein content|Rich in phosphorus — good for bone health|Used in traditional medicine for wound healing|Firm flesh aids muscle development"},
+  {id:5,label:"Derhwa",common:"Slender Rasbora",sci:"Rasbora daniconius",names:"Darkina|Dhera|Derkha|Anju|Chela dania",status:"permitted",pmin:40,pmax:90,health:"High in calcium when eaten whole|Good protein source for daily nutrition|Rich in micronutrients|Commonly eaten by children for bone development"},
+  {id:6,label:"Gaicha",common:"Barred Spiny Eel",sci:"Macrognathus pancalus",names:"Gaincha|Gonch|Baim|Guchhi|Bamb",status:"permitted",pmin:100,pmax:220,health:"Good protein source|Contains phosphorus and calcium|Low fat — suitable for weight management|Traditionally used as a nutritious food fish"},
+  {id:7,label:"Grass",common:"Grass Carp",sci:"Ctenopharyngodon idella",names:"Ghas Machli|Grass Rohu|Herbi Carp|White Amur",status:"permitted",pmin:80,pmax:140,health:"Low in fat and calories|Good lean protein source|Easy to digest|Suitable for people with high cholesterol"},
+  {id:8,label:"Jalkapoor",common:"Butter Catfish",sci:"Ompok bimaculatus",names:"Bocha|Boali|Pabo|Pabda|Pabdah|Butter Fish",status:"permitted",pmin:150,pmax:300,health:"Exceptionally high in protein|Rich in omega-3 and omega-6 fatty acids|Used in Ayurveda for liver health|One of the most prized river catfish of Central India"},
+  {id:9,label:"Kavai",common:"Climbing Perch",sci:"Anabas testudineus",names:"Kawoi|Koi|Coius|Koi maach|Kata koi",status:"permitted",pmin:100,pmax:200,health:"High in protein and iron|Used medicinally — recommended post-surgery and for recovery|Helps improve haemoglobin levels|Can survive out of water — always buy live"},
+  {id:10,label:"Kauwa",common:"Freshwater Needlefish",sci:"Xenentodon cancila",names:"Kakila|Kajuli|Kanpata|Kankila|Needle fish",status:"permitted",pmin:60,pmax:130,health:"Good source of lean protein|Low in fat|Traditionally used in soups for recovery from illness|Rich in phosphorus"},
+  {id:11,label:"Kotra",common:"Banded Gourami",sci:"Trichogaster fasciata",names:"Khailsha|Gourami|Kholisha|Cotra|Sepat",status:"permitted",pmin:60,pmax:130,health:"Good source of protein|Low in calories — good for light meals|Rich in micronutrients|Easily available in local CG markets"},
+  {id:12,label:"Mangur",common:"Walking Catfish",sci:"Clarias batrachus",names:"Magur|Magura|Manguri|Yetti|Catfish",status:"permitted",pmin:200,pmax:400,health:"Exceptionally high in protein and iron|Used in traditional medicine — recommended post-surgery|Helps treat anaemia — rich in haemoglobin-building nutrients|Medicinal value documented in Ayurvedic literature"},
+  {id:13,label:"Naini",common:"Mrigal Carp",sci:"Cirrhinus mrigala",names:"Mrigal|Mrugal|Nain|Mrigela|White Carp",status:"permitted",pmin:140,pmax:200,health:"Good source of protein and minerals|Low fat — suitable for patients and elderly|Recommended in post-illness diets|Widely farmed and freshly available year-round"},
+  {id:14,label:"Pathra",common:"Suckermouth Catfish",sci:"Pterygoplichthys sp.",names:"Sucker Catfish|Armoured Catfish|Janitor Fish",status:"permitted",pmin:30,pmax:80,health:"Safe to eat — edible and protein-rich|Low in fat|⚠ Invasive species — help control spread|Report sightings to local fisheries department"},
+  {id:15,label:"Patiya",common:"Striped Spiny Eel",sci:"Macrognathus aculeatus",names:"Pata|Patia|Gonch|Bamb|Baunsi Baim",status:"permitted",pmin:100,pmax:220,health:"Good source of protein|Bony structure — rich in calcium when slow-cooked|Prized in Odia and CG cuisine|Best cooked in pressure cooker or slow curry"},
+  {id:16,label:"Rewa",common:"Reba Carp",sci:"Cirrhinus reba",names:"Reba|Ria|Puddin|Bhangon|Kalibaus",status:"permitted",pmin:80,pmax:160,health:"Good source of protein and minerals|Low in fat|Suitable for daily consumption|Common in CG rivers — freshly available in local markets"},
+  {id:17,label:"Rohu",common:"Rohu",sci:"Labeo rohita",names:"Rui|Rahu|Rohit|Rohi|Rawas",status:"permitted",pmin:160,pmax:220,health:"High in protein and omega-3 fatty acids|Excellent for heart health and brain development|Rich in vitamin D and phosphorus|Safe for daily consumption by all age groups"},
+  {id:18,label:"Sinhi",common:"Stinging Catfish",sci:"Heteropneustes fossilis",names:"Singhi|Singhee|Sengal|Shingala|Shingti",status:"permitted",pmin:200,pmax:400,health:"Very high in protein and iron|Used medicinally — treats anaemia and weakness|Recommended for post-surgery recovery|Medicinal value recognised by ICAR and local healers"},
+  {id:19,label:"Tengra",common:"Tengra Catfish",sci:"Mystus tengara",names:"Tengra|Tengna|Tegnaa|Tangra|Tengan",status:"permitted",pmin:150,pmax:300,health:"High in calcium and protein|Bones are soft and edible when fried — extra calcium|Traditionally used for improving bone density in children|Popular in CG, MP and Bihar markets"},
+  {id:20,label:"Chalwa",common:"Mola Carplet",sci:"Amblypharyngodon mola",names:"Mola|Moila|Dhawal|Mourala|Chela",status:"permitted",pmin:30,pmax:80,health:"Very high in calcium — among the best small fish for bone health|Excellent for growing children and elderly|Rich in vitamin A — good for eyesight|Best eaten whole when fried crisp"},
+  {id:21,label:"Kursa",common:"Olive Barb",sci:"Systomus sarana",names:"Kurti|Kurchi|Sarana|Sara|Putitor",status:"permitted",pmin:60,pmax:140,health:"Good source of protein with firm flesh|Low in fat|Rich in phosphorus — good for bones|Common in CG and MP rivers — freshly available"},
+  {id:22,label:"Chana",common:"Spotted Snakehead",sci:"Channa punctata",names:"Channa|Dhaura|Chandi|Cheng|Chal",status:"permitted",pmin:120,pmax:250,health:"High in protein|Used in traditional medicine for wound recovery|Firm flesh supports muscle development|Low mercury freshwater fish"},
+  {id:23,label:"Garai",common:"Dwarf Snakehead",sci:"Channa gachua",names:"Gachua|Gachhu|Teel|Tila|Bou maach",status:"permitted",pmin:150,pmax:300,health:"Good source of protein|High in omega-3 fatty acids|Traditionally used in local medicine for strength|Small size — ideal for frying whole"},
+  {id:24,label:"Bhula",common:"Flying Barb",sci:"Esomus danricus",names:"Bhola|Bhaula|Chela|Ekthuthi|Danio",status:"permitted",pmin:30,pmax:80,health:"High in calcium when fried whole with bones|Good everyday protein source|Rich in micronutrients|Best consumed fresh from river"},
+  {id:25,label:"Pothiya",common:"Pool Barb",sci:"Puntius sophore",names:"Puti|Puthi|Sophore Barb|Tikuli|Potha",status:"permitted",pmin:30,pmax:80,health:"Good everyday protein source|High in calcium when eaten whole|Rich in micronutrients|Affordable and widely available in CG markets"},
+  {id:26,label:"Carp",common:"Common Carp",sci:"Cyprinus carpio",names:"Kamalkant|Saras|Vilayati Rohu|Shapta|Mirror Carp",status:"permitted",pmin:80,pmax:150,health:"Good source of protein and B vitamins|Rich in omega-3 fatty acids|Low mercury — safe for regular consumption|Widely farmed and available year-round"},
+];
+
+let filtered = [...data];
+
+function renderTable(rows) {
+  const tbody = document.getElementById('tableBody');
+  const noRes = document.getElementById('noResults');
+  if (!rows.length) { tbody.innerHTML = ''; noRes.style.display = ''; return; }
+  noRes.style.display = 'none';
+  tbody.innerHTML = rows.map(r => {
+    const nameTags = r.names.split('|').map(n => `<span class="name-tag">${n}</span>`).join('');
+    const healthPoints = r.health.split('|').map(h => {
+      const isWarn = h.startsWith('⚠');
+      return `<div class="health-point${isWarn?' warn':''}"><span class="dot"></span><span>${h}</span></div>`;
+    }).join('');
+    return `<tr>
+      <td class="id-cell">${r.id}</td>
+      <td class="label-cell">${r.label}</td>
+      <td class="common-cell">${r.common}</td>
+      <td class="sci-cell">${r.sci}</td>
+      <td class="names-cell col-names">${nameTags}</td>
+      <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+      <td class="price-cell col-price">₹${r.pmin} – ₹${r.pmax}</td>
+      <td class="health-cell col-health">${healthPoints}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const rows = q ? data.filter(r =>
+    r.label.toLowerCase().includes(q) ||
+    r.common.toLowerCase().includes(q) ||
+    r.sci.toLowerCase().includes(q) ||
+    r.names.toLowerCase().includes(q)
+  ) : data;
+  renderTable(rows);
+}
+
+function toggleCol(cls) {
+  document.querySelectorAll('.' + cls).forEach(el => {
+    el.style.display = el.style.display === 'none' ? '' : 'none';
+  });
+}
+
+renderTable(data);
+</script>
+</body>
+</html>

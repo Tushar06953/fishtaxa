@@ -7,12 +7,11 @@ class Species {
   final String commonNameEn;
   final String scientificName;
   final String label;
-  final String? nameHindi;
-  final String? nameCgLocal;
+  final String? otherNames;
   final LegalStatus legalStatus;
   final int priceMinKg;
   final int priceMaxKg;
-  final String? healthAdvisory;
+  final String? healthUses;
   final List<int> seasonalBanMonths;
 
   const Species({
@@ -20,14 +19,25 @@ class Species {
     required this.commonNameEn,
     required this.scientificName,
     required this.label,
-    this.nameHindi,
-    this.nameCgLocal,
+    this.otherNames,
     required this.legalStatus,
     required this.priceMinKg,
     required this.priceMaxKg,
-    this.healthAdvisory,
+    this.healthUses,
     required this.seasonalBanMonths,
   });
+
+  /// Returns other names as a list, split by pipe character.
+  List<String> get otherNamesList {
+    if (otherNames == null || otherNames!.trim().isEmpty) return [];
+    return otherNames!.split('|').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+  }
+
+  /// Returns health use points as a list, split by pipe character.
+  List<String> get healthUsesList {
+    if (healthUses == null || healthUses!.trim().isEmpty) return [];
+    return healthUses!.split('|').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+  }
 
   factory Species.fromMap(Map<String, dynamic> map) {
     final commonName = map['common_name_en'] as String;
@@ -36,15 +46,14 @@ class Species {
       commonNameEn: commonName,
       scientificName: map['scientific_name'] as String,
       label: (map['label'] as String?) ?? commonName.split('/').first.trim(),
-      nameHindi: map['name_hindi'] as String?,
-      nameCgLocal: map['name_cg_local'] as String?,
+      otherNames: map['other_names'] as String?,
       legalStatus: LegalStatus.values.firstWhere(
-        (e) => e.name == map['legal_status'],
+            (e) => e.name == map['legal_status'],
         orElse: () => LegalStatus.permitted,
       ),
       priceMinKg: (map['price_min_kg'] as int?) ?? 0,
       priceMaxKg: (map['price_max_kg'] as int?) ?? 0,
-      healthAdvisory: map['health_advisory'] as String?,
+      healthUses: map['health_uses'] as String?,
       seasonalBanMonths: map['seasonal_ban_months'] != null
           ? List<int>.from(jsonDecode(map['seasonal_ban_months'] as String))
           : [],

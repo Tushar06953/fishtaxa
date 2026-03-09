@@ -45,7 +45,7 @@ class SpeciesCard extends StatelessWidget {
                 decoration: const BoxDecoration(
                   color: AppColors.deep,
                   borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(15)),
+                  BorderRadius.vertical(top: Radius.circular(15)),
                 ),
                 child: Center(
                   child: Icon(
@@ -63,10 +63,10 @@ class SpeciesCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    species.commonNameEn,
+                    species.label,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      fontWeight: FontWeight.w600,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -74,8 +74,8 @@ class SpeciesCard extends StatelessWidget {
                   Text(
                     species.scientificName,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontStyle: FontStyle.italic,
-                        ),
+                      fontStyle: FontStyle.italic,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -98,9 +98,9 @@ class SpeciesCard extends StatelessWidget {
                                 .textTheme
                                 .labelSmall
                                 ?.copyWith(
-                                  color: catColor,
-                                  fontSize: 9,
-                                ),
+                              color: catColor,
+                              fontSize: 9,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),

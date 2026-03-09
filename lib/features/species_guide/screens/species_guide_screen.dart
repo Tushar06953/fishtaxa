@@ -26,7 +26,7 @@ class SpeciesGuideScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: TextField(
               onChanged: (v) =>
-                  ref.read(guideSearchProvider.notifier).state = v,
+              ref.read(guideSearchProvider.notifier).state = v,
               style: const TextStyle(color: AppColors.textPrimary),
               decoration: InputDecoration(
                 hintText: 'Search by name, Hindi, local name...',
@@ -34,11 +34,11 @@ class SpeciesGuideScreen extends ConsumerWidget {
                     color: AppColors.textMuted, size: 20),
                 suffixIcon: searchQuery.isNotEmpty
                     ? GestureDetector(
-                        onTap: () =>
-                            ref.read(guideSearchProvider.notifier).state = '',
-                        child: const Icon(Icons.close,
-                            color: AppColors.textMuted, size: 20),
-                      )
+                  onTap: () =>
+                  ref.read(guideSearchProvider.notifier).state = '',
+                  child: const Icon(Icons.close,
+                      color: AppColors.textMuted, size: 20),
+                )
                     : null,
               ),
             ),
@@ -62,11 +62,11 @@ class SpeciesGuideScreen extends ConsumerWidget {
                       selectedColor: AppColors.teal,
                       checkmarkColor: Colors.white,
                       labelStyle:
-                          Theme.of(context).textTheme.labelMedium?.copyWith(
-                                color: selected
-                                    ? Colors.white
-                                    : AppColors.textMuted,
-                              ),
+                      Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: selected
+                            ? Colors.white
+                            : AppColors.textMuted,
+                      ),
                     ),
                   );
                 }).toList(),
@@ -106,7 +106,7 @@ class SpeciesGuideScreen extends ConsumerWidget {
                 return GridView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
                   gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
@@ -118,8 +118,8 @@ class SpeciesGuideScreen extends ConsumerWidget {
                   )
                       .animate()
                       .fadeIn(
-                          delay: Duration(milliseconds: i * 30),
-                          duration: 300.ms),
+                      delay: Duration(milliseconds: i * 30),
+                      duration: 300.ms),
                 );
               },
             ),

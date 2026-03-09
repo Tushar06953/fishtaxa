@@ -132,16 +132,16 @@ class SpeciesDetailScreen extends ConsumerWidget {
               children: [
                 // [B] SPECIES NAME BLOCK
                 Text(
-                  species.commonNameEn,
+                  species.label,
                   style: Theme.of(context).textTheme.displaySmall,
                 ).animate().fadeIn(duration: 400.ms),
                 const SizedBox(height: 4),
                 Text(
                   species.scientificName,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textMuted,
-                        fontStyle: FontStyle.italic,
-                      ),
+                    color: AppColors.textMuted,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ).animate().fadeIn(delay: 60.ms, duration: 400.ms),
                 const SizedBox(height: 14),
 
@@ -164,9 +164,9 @@ class SpeciesDetailScreen extends ConsumerWidget {
                               .textTheme
                               .labelSmall
                               ?.copyWith(
-                                color: catColor,
-                                fontWeight: FontWeight.w700,
-                              ),
+                            color: catColor,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -197,9 +197,9 @@ class SpeciesDetailScreen extends ConsumerWidget {
                                 .textTheme
                                 .labelSmall
                                 ?.copyWith(
-                                  color: statusColor,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                              color: statusColor,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ],
                       ),
@@ -217,9 +217,9 @@ class SpeciesDetailScreen extends ConsumerWidget {
                       Text(
                         'Average Market Price',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: AppColors.textMuted,
-                              letterSpacing: 0.5,
-                            ),
+                          color: AppColors.textMuted,
+                          letterSpacing: 0.5,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       Row(
@@ -234,9 +234,9 @@ class SpeciesDetailScreen extends ConsumerWidget {
                                 .textTheme
                                 .headlineMedium
                                 ?.copyWith(
-                                  color: AppColors.gold,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                              color: AppColors.gold,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ],
                       ),
@@ -244,9 +244,9 @@ class SpeciesDetailScreen extends ConsumerWidget {
                       Text(
                         'Prices approximate. Vary by season and local market.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textMuted,
-                              fontStyle: FontStyle.italic,
-                            ),
+                          color: AppColors.textMuted,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ],
                   ),
@@ -254,35 +254,31 @@ class SpeciesDetailScreen extends ConsumerWidget {
 
                 const SizedBox(height: 12),
 
-                // [D] REGIONAL NAMES CARD
+                // [D] ALSO KNOWN AS CARD
                 _SectionCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Regional Names',
+                        'Also Known As',
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: AppColors.tealBright,
-                            ),
+                          color: AppColors.tealBright,
+                        ),
                       ),
                       const SizedBox(height: 12),
-                      _nameRow('🇮🇳 Hindi', species.nameHindi, context),
-                      const SizedBox(height: 10),
-                      _nameRow('🇮🇳 CG / Local', species.nameCgLocal, context),
+                      _otherNamesWidget(context, species.otherNamesList),
                     ],
                   ),
                 ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
 
                 const SizedBox(height: 12),
 
-                // [E] HEALTH ADVISORY CARD
-                if (species.healthAdvisory != null) ...[
-                  _healthAdvisoryCard(
-                      context, species.healthAdvisory!, isInvasive)
-                      .animate()
-                      .fadeIn(delay: 250.ms, duration: 400.ms),
-                  const SizedBox(height: 12),
-                ],
+                // [E] HEALTH & NUTRITION CARD
+                _healthUsesCard(context, species.healthUsesList, isInvasive)
+                    .animate()
+                    .fadeIn(delay: 250.ms, duration: 400.ms),
+
+                const SizedBox(height: 12),
 
                 // [F] SEASONAL CALENDAR CARD
                 _SectionCard(
@@ -335,46 +331,41 @@ class SpeciesDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _nameRow(String label, String? value, BuildContext context) {
-    final isEmpty = value == null || value.trim().isEmpty;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 100,
-          child: Text(
-            label,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: AppColors.textMuted),
+  Widget _otherNamesWidget(BuildContext context, List<String> names) {
+    if (names.isEmpty) {
+      return Text(
+        'No other recorded names',
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: AppColors.textMuted,
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    }
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: names.map((name) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: const Color(0xFF4A9EFF).withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            color: const Color(0xFF4A9EFF).withValues(alpha: 0.25),
           ),
         ),
-        Expanded(
-          child: Text(
-            isEmpty ? 'Not recorded in this region' : value,
-            style: isEmpty
-                ? Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textMuted,
-                      fontStyle: FontStyle.italic,
-                    )
-                : Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+        child: Text(
+          name,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: const Color(0xFF7EB8FF),
+            fontWeight: FontWeight.w500,
           ),
         ),
-      ],
+      )).toList(),
     );
   }
 
-  Widget _healthAdvisoryCard(
-      BuildContext context, String advisory, bool isInvasive) {
-    final bullets = advisory
-        .split('. ')
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
-
+  Widget _healthUsesCard(
+      BuildContext context, List<String> uses, bool isInvasive) {
     return _SectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,7 +376,7 @@ class SpeciesDetailScreen extends ConsumerWidget {
                   color: AppColors.tealBright, size: 18),
               const SizedBox(width: 8),
               Text(
-                'Health Advisory',
+                'Health & Nutrition',
                 style: Theme.of(context)
                     .textTheme
                     .labelLarge
@@ -394,39 +385,47 @@ class SpeciesDetailScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ...bullets.asMap().entries.map((entry) {
-            final i = entry.key;
-            final point = entry.value;
-            final isFirstInvasive = isInvasive && i == 0;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    isFirstInvasive
-                        ? Icons.warning_amber_outlined
-                        : Icons.check_circle,
-                    color: isFirstInvasive
-                        ? AppColors.coral
-                        : AppColors.permitted,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      point,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isFirstInvasive
-                                ? AppColors.coral
-                                : AppColors.textPrimary,
-                          ),
-                    ),
-                  ),
-                ],
+          if (uses.isEmpty)
+            Text(
+              'No health information available',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textMuted,
+                fontStyle: FontStyle.italic,
               ),
-            );
-          }),
+            )
+          else
+            ...uses.asMap().entries.map((entry) {
+              final point = entry.value;
+              final isWarnPoint = point.startsWith('⚠');
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      isWarnPoint
+                          ? Icons.warning_amber_outlined
+                          : Icons.check_circle,
+                      color: isWarnPoint
+                          ? AppColors.coral
+                          : AppColors.permitted,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        point,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: isWarnPoint
+                              ? AppColors.coral
+                              : AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
         ],
       ),
     );
@@ -454,10 +453,10 @@ class SpeciesDetailScreen extends ConsumerWidget {
           child: Text(
             _months[index],
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: isBanned ? AppColors.coral : AppColors.textMuted,
-                  fontWeight:
-                      isBanned ? FontWeight.w700 : FontWeight.w400,
-                ),
+              color: isBanned ? AppColors.coral : AppColors.textMuted,
+              fontWeight:
+              isBanned ? FontWeight.w700 : FontWeight.w400,
+            ),
           ),
         ),
       );

@@ -20,11 +20,10 @@ class SpeciesDatabase {
   Future<Database> _initDb() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'species.db');
-    if (!await File(path).exists()) {
-      final data = await rootBundle.load('assets/db/species.db');
-      final bytes = data.buffer.asUint8List();
-      await File(path).writeAsBytes(bytes, flush: true);
-    }
+    // Always overwrite from assets so updates are picked up immediately
+    final data = await rootBundle.load('assets/db/species.db');
+    final bytes = data.buffer.asUint8List();
+    await File(path).writeAsBytes(bytes, flush: true);
     return openDatabase(path, readOnly: true);
   }
 
@@ -48,8 +47,8 @@ class SpeciesDatabase {
       SELECT * FROM species
       WHERE LOWER(common_name_en) LIKE ?
         OR LOWER(scientific_name) LIKE ?
-        OR LOWER(name_hindi) LIKE ?
-        OR LOWER(name_cg_local) LIKE ?
+        OR LOWER(label) LIKE ?
+        OR LOWER(other_names) LIKE ?
       ORDER BY common_name_en ASC
     ''', ['%$lower%', '%$lower%', '%$lower%', '%$lower%']);
     return maps.map(Species.fromMap).toList();

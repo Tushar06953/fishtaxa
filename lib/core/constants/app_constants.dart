@@ -12,7 +12,7 @@ class AppConstants {
   static const int numClasses = 26;
   static const int topK = 3;
   static const double confidenceThreshold = 0.60;
-  static const int splashDuration = 2500; // ms
+  static const int splashDuration = 2500;
 
   static const Map<String, String> speciesCategory = {
     'Mangur':    'Premium Medicinal',
@@ -43,15 +43,16 @@ class AppConstants {
     'Pathra':    'Invasive Species',
   };
 
-  static const Map<String, Color> categoryColor = {
-    'Premium Medicinal': Color(0xFFF5C842),
-    'Prized Catfish':    Color(0xFF0D7A6E),
-    'Snakehead':         Color(0xFFFF6B47),
-    'Major Carp':        Color(0xFF00FF88),
-    'Spiny Eel':         Color(0xFF7BA8B8),
-    'Small Carp':        Color(0xFF7BA8B8),
-    'Needlefish':        Color(0xFF10C9B1),
-    'Gourami':           Color(0xFF10C9B1),
-    'Invasive Species':  Color(0xFFFF6B47),
+  // Non-const map — Color constructor is not const-safe across all Flutter versions
+  static final Map<String, Color> categoryColor = {
+    'Premium Medicinal': const Color(0xFFF5C842),
+    'Prized Catfish':    const Color(0xFF0D7A6E),
+    'Snakehead':         const Color(0xFFFF6B47),
+    'Major Carp':        const Color(0xFF00FF88),
+    'Spiny Eel':         const Color(0xFF7BA8B8),
+    'Small Carp':        const Color(0xFF7BA8B8),
+    'Needlefish':        const Color(0xFF10C9B1),
+    'Gourami':           const Color(0xFF10C9B1),
+    'Invasive Species':  const Color(0xFFFF6B47),
   };
 }
