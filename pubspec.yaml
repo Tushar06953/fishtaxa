@@ -1,0 +1,45 @@
+name: fishtaxa
+description: Offline AI fish species identification for India
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  go_router: ^13.2.0
+  sqflite: ^2.3.3
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  camera: ^0.10.5
+  image_picker: ^1.1.2
+  tflite_flutter: ^0.12.0
+  google_fonts: ^6.2.1
+  flutter_animate: ^4.5.0
+  shared_preferences: ^2.2.3
+  image: ^4.1.3
+  path_provider: ^2.1.3
+  path: ^1.9.0
+  crypto: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.9
+  riverpod_generator: ^2.4.0
+  hive_generator: ^2.0.1
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/model/labels.txt
+    - assets/db/species.db
+    - assets/images/placeholder/fish.png
+    # NOTE: fish_classifier_v1.tflite is intentionally omitted here until placed
+    # When owner adds the file, add this line:
+    # - assets/model/fish_classifier_v1.tflite
